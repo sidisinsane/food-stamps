@@ -1,0 +1,44 @@
+---
+import { localizePath } from "astro-i18next";
+
+import FoodStamp from "./FoodStamp.astro";
+
+const { posts } = Astro.props;
+---
+
+<ul>
+  {
+    posts.map((post: any) => (
+      <li>
+        <a href={localizePath(`/${post.slug}/`)} title={post.data.name}>
+          <FoodStamp {...post.data} isPreview={true} />
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    justify-content: center;
+    gap: var(--gap);
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ul li > a {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    text-decoration: none;
+    transition: transform 200ms ease-in-out;
+  }
+
+  ul li > a:hover {
+    transform: scale(1.2);
+  }
+</style>

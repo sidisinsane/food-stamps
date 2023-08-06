@@ -1,0 +1,440 @@
+---
+import i18next from "i18next";
+
+import type {
+  SupplyType,
+  ToolType,
+  ItemRequiredProps,
+} from "../lib/unit-converter/types";
+
+import {
+  itemRequiredQuantityValue,
+  itemRequiredQuantitySymbol,
+  groupIngredientsByQuantity,
+} from "../lib/unit-converter";
+
+import { i18n, getI18nObj } from "../lib/i18n";
+
+interface Props {
+  name: string;
+  datePublished: string;
+  recipeCuisine: string;
+  recipeCategory: string;
+  tool: ToolType[];
+  supply: SupplyType[];
+  url?: string;
+  isLid?: boolean;
+  isPreview?: boolean;
+}
+
+const {
+  name,
+  datePublished,
+  recipeCuisine,
+  recipeCategory,
+  tool,
+  supply,
+  url,
+  isLid = false,
+  isPreview = false,
+} = Astro.props as Props;
+
+const locale = i18next.language;
+const i18nObj = getI18nObj(locale);
+
+const DEBUG = true;
+---
+
+<article
+  class={`food-stamp ${!isPreview && `food-stamp--${tool[0].name}`} ${
+    isPreview && "is-preview"
+  } ${isLid && "is-lid"}`}
+  lang={locale}
+  itemscope
+  itemtype="https://schema.org/Recipe"
+>
+  <header class="header">
+    <h1 class="headline" itemprop="name">{i18n(name, i18nObj["name"])}</h1>
+    <h2 class="overline">
+      {
+        recipeCuisine && (
+          <meta itemprop="recipeCuisine" content={recipeCuisine} />
+        )
+      }
+      <span itemprop="recipeCategory"
+        >{i18n(recipeCategory, i18nObj["category"])}</span
+      >
+    </h2>
+    {recipeCuisine && <h3 class="subline">{recipeCuisine}</h3>}
+  </header>
+
+  {
+    supply && (
+      <div class="main">
+        <ul class="ingredients">
+          {supply instanceof Array &&
+            groupIngredientsByQuantity(supply).map((item: SupplyType) => (
+              <li class="ingredient" itemprop="recipeIngredient">
+                <span class="ingredient-amount">
+                  {itemRequiredQuantityValue({
+                    locale: locale,
+                    item: item,
+                    debug: DEBUG,
+                  } as ItemRequiredProps)}
+                </span>{" "}
+                <span class="ingredient-unit">
+                  {typeof item.requiredQuantity.unitCode !== "undefined" && (
+                    <span>
+                      {itemRequiredQuantitySymbol({
+                        locale: locale,
+                        item: item,
+                        debug: DEBUG,
+                      } as ItemRequiredProps)}
+                    </span>
+                  )}
+                </span>
+                {item.name instanceof Array && (
+                  <span class="ingredient-name">
+                    {item.name
+                      .map((name: string) =>
+                        i18n(
+                          name,
+                          item.requiredQuantity.value,
+                          i18nObj["ingredient"],
+                        ),
+                      )
+                      .join(", ")}
+                  </span>
+                )}
+              </li>
+            ))}
+        </ul>
+      </div>
+    )
+  }
+  {" "}
+  <footer class="footer">
+    <time
+      class:list={["date"]}
+      datetime={new Date(Date.parse(datePublished)).toISOString()}
+      itemprop="datePublished"
+    >
+      {
+        new Intl.DateTimeFormat("en-CA", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }).format(new Date(Date.parse(datePublished)))
+      }
+    </time>
+  </footer>
+</article>
+
+<style>
+  .food-stamp {
+    font-size: 1.25rem;
+    font-family: Montserrat, sans-serif;
+    font-weight: 400;
+    line-height: 1.1;
+    text-align: center;
+    background-color: #ffffffff;
+    color: #000000;
+    border: 0.5px dotted #cccccc;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  @media print {
+    .food-stamp {
+      page-break-inside: avoid;
+    }
+  }
+
+  .food-stamp:where(.is-lid, .round, .is-preview) {
+    border-radius: 100%;
+  }
+
+  /* 1/1 (square, round) Surface Labels (default) */
+  .food-stamp {
+    --padding: 1.5em;
+    --gap: 0.75em;
+
+    display: grid;
+    align-content: center;
+    justify-content: stretch;
+    gap: var(--gap);
+    width: auto;
+    aspect-ratio: 1/1;
+    padding: 0;
+  }
+
+  /* 6/4 Surface Labels */
+  :where(
+      .food-stamp--tiegel-100,
+      .food-stamp--tiegel-50,
+      .food-stamp--tiegel-30,
+      .food-stamp--mason-jar-regular-mouth-pint,
+      .food-stamp--weck-sturz-glass-160
+    ):not(.is-lid, .is-preview) {
+    aspect-ratio: 6/4;
+  }
+
+  /* 4/6 Surface Labels */
+  :where(.food-stamp--quattro-stagioni-500):not(.is-lid, .is-preview) {
+    aspect-ratio: 4/6;
+  }
+
+  /* Tiegel DIN 52339 Jars */
+  .food-stamp--tiegel-100 {
+    height: 50mm;
+  }
+
+  .food-stamp--tiegel-100:not(.is-lid, .is-preview) {
+    height: 40mm;
+  }
+
+  .food-stamp--tiegel-50 {
+    height: 45mm;
+  }
+
+  .food-stamp--tiegel-50:not(.is-lid, .is-preview) {
+    height: 30mm;
+  }
+
+  .food-stamp--tiegel-30 {
+    --padding: 1em;
+    --gap: 0.5em;
+
+    height: 35mm;
+  }
+
+  .food-stamp--tiegel-30:not(.is-lid, .is-preview) {
+    height: 25mm;
+  }
+
+  /* Ball Mason Jars */
+  .food-stamp--mason-jar-regular-mouth-pint {
+    height: 50mm;
+  }
+
+  .food-stamp--mason-jar-regular-mouth-pint:not(.is-lid, .is-preview) {
+    height: 45mm;
+  }
+
+  .food-stamp--mason-jar-wide-mouth-quart {
+    height: 65mm;
+  }
+
+  .food-stamp--mason-jar-wide-mouth-quart:not(.is-lid, .is-preview) {
+    display: none;
+  }
+
+  /* Bormioli Rocco "Quattro Stagioni" Jars */
+  .food-stamp--quattro-stagioni-500 {
+    height: 55mm;
+  }
+
+  .food-stamp--quattro-stagioni-500:not(.is-lid, .is-preview) {
+    height: 60mm;
+  }
+
+  /* Weck Jars */
+  .food-stamp--weck-sturz-glass-160 {
+    height: 45mm;
+  }
+
+  .food-stamp--weck-sturz-glass-160:not(.is-lid, .is-preview) {
+    height: 50mm;
+  }
+
+  /* Repurposed Jars */
+  .food-stamp--feinkost-englert-440 {
+    height: 60mm;
+  }
+
+  .food-stamp--feinkost-englert-440:not(.is-lid, .is-preview) {
+    height: 70mm;
+  }
+
+  .food-stamp--feinkost-weber-400 {
+    height: 65mm;
+  }
+
+  .food-stamp--feinkost-weber-400:not(.is-lid, .is-preview) {
+    height: 80mm;
+  }
+
+  a:has(.is-preview),
+  .is-preview {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  /* Shared header, main, footer */
+  .header,
+  .main,
+  .footer {
+    max-width: 100%;
+    padding-inline: var(--padding);
+  }
+
+  /* Header */
+  .header {
+    display: grid;
+    place-content: center;
+    row-gap: 0.25em;
+    padding-block-start: var(--padding);
+  }
+
+  .overline,
+  .headline,
+  .subline {
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .overline,
+  .subline {
+    font-size: 0.5em;
+    font-weight: 400;
+  }
+
+  .overline {
+    order: 1;
+  }
+
+  /* Hide subline by default */
+  .subline {
+    display: none;
+    justify-self: center;
+    background-color: transparent;
+    border: 0.5px solid currentColor;
+    padding-inline: 0.25em;
+    order: 3;
+  }
+
+  .headline {
+    font-size: 1em;
+    font-weight: 800;
+    order: 2;
+  }
+
+  /* Main */
+  /* Selectively hide main */
+  :where(
+      .is-preview,
+      .food-stamp--tiegel-30,
+      .food-stamp--tiegel-50:not(.is-lid, .is-preview),
+      .food-stamp--tiegel-100:not(.is-lid, .is-preview),
+      .food-stamp--mason-jar-regular-mouth-pint.is-lid,
+      .food-stamp--feinkost-englert-440.is-lid,
+      .food-stamp--feinkost-weber-400.is-lid
+    )
+    .main {
+    display: none;
+  }
+
+  /* Selectively show subline */
+  :where(
+      .is-preview,
+      .food-stamp:not(:has(.main)),
+      .food-stamp--tiegel-30,
+      .food-stamp--tiegel-50:not(.is-lid, .is-preview),
+      .food-stamp--tiegel-100:not(.is-lid, .is-preview),
+      .food-stamp--mason-jar-regular-mouth-pint.is-lid,
+      .food-stamp--feinkost-englert-440.is-lid,
+      .food-stamp--feinkost-weber-400.is-lid
+    )
+    .subline {
+    display: block;
+  }
+
+  .ingredients {
+    font-size: 0.5em;
+    font-weight: 400;
+    line-height: 1.4;
+    display: table;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .ingredient {
+    display: table-row;
+  }
+
+  .ingredient-amount,
+  .ingredient-unit,
+  .ingredient-name {
+    display: table-cell;
+    vertical-align: top;
+    padding-inline: 0.5ch;
+  }
+
+  .ingredient-amount {
+    text-align: end;
+    padding-inline-start: 0;
+  }
+
+  .ingredient-unit {
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  .ingredient-name {
+    text-align: start;
+    padding-inline-end: 0;
+  }
+
+  /* Footer */
+  .footer {
+    padding-block-end: var(--padding);
+  }
+
+  .footer::before {
+    content: "";
+    background-color: #000000;
+    display: block;
+    width: 50%;
+    height: 1.5pt;
+    margin-inline: auto;
+    transform: translateY(50%);
+  }
+
+  .date {
+    font-size: 0.5em;
+    font-weight: 400;
+  }
+
+  /* Custom styles */
+  :where(
+      .food-stamp--tiegel-50,
+      .food-stamp--mason-jar-regular-mouth-pint,
+      .food-stamp--quattro-stagioni-500
+    )
+    .headline {
+    font-size: 0.85em;
+  }
+
+  :where(
+      .food-stamp--tiegel-50,
+      .food-stamp--mason-jar-regular-mouth-pint,
+      .food-stamp--quattro-stagioni-500
+    )
+    .footer::before {
+    height: 1.25pt;
+  }
+
+  :where(.food-stamp--tiegel-30) .headline {
+    font-size: 0.75em;
+  }
+
+  :where(.food-stamp--tiegel-30) .footer::before {
+    height: 1pt;
+  }
+</style>

@@ -1,0 +1,5 @@
+# generated types
+.astro/
+artifacts/
+docs/
+reports/

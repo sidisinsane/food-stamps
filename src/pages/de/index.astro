@@ -1,0 +1,28 @@
+---
+import "dotenv/config";
+import i18next from "i18next";
+
+import { sortByName, sortByDatestring } from "../../lib/utils/index";
+
+import Layout from "../../layouts/FoodPosts.astro";
+import FoodStamps from "../../components/FoodStamps.astro";
+
+import { getCollection } from "astro:content";
+
+const { SITE_TITLE, SITE_DESCRIPTION } = process.env;
+
+const posts = (await getCollection("food")).sort(
+  (a, b) =>
+    sortByName(a.data.name, b.data.name) ||
+    sortByDatestring(a.data.datePublished, b.data.datePublished),
+);
+
+const locale = "de";
+i18next.changeLanguage(locale);
+---
+
+<Layout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+  <section>
+    <FoodStamps posts={posts} />
+  </section>
+</Layout>

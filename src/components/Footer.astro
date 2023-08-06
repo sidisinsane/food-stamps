@@ -1,0 +1,70 @@
+---
+import "dotenv/config";
+import { Icon } from "astro-icon";
+
+const { SITE_OWNER, PROFILE_GITHUB_ID, PROFILE_TWITTER_ID } = process.env;
+
+const today = new Date();
+---
+
+<footer>
+  <p class="copyright">
+    &copy; {today.getFullYear()}
+    {SITE_OWNER}.
+  </p>
+
+  <nav>
+    <a
+      href={`https://twitter.com/${PROFILE_TWITTER_ID}`}
+      title="Twitter Profile"
+      target="_blank"
+    >
+      <Icon name="bootstrap-icons/twitter" aria-label="Twitter Icon" />
+    </a>
+    <a
+      href={`https://github.com/${PROFILE_GITHUB_ID}`}
+      title="Github Profile"
+      target="_blank"
+    >
+      <Icon name="bootstrap-icons/github" aria-label="Github Icon" />
+    </a>
+  </nav>
+</footer>
+
+<style>
+  footer {
+    background-image: var(--bg-image);
+    background-color: var(--bg-color-highlighted);
+    color: var(--fg-color-highlighted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(0.5 * var(--gap));
+    padding-block: var(--gap);
+  }
+
+  .copyright {
+    text-align: center;
+  }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--gap);
+  }
+
+  a {
+    text-decoration: none;
+    color: currentColor;
+  }
+
+  a:hover {
+    color: var(--fg-color);
+  }
+
+  svg {
+    width: 32px;
+    height: auto;
+    fill: currentColor;
+  }
+</style>

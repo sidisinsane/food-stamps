@@ -1,0 +1,41 @@
+---
+import i18next from "i18next";
+
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "./BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+type Props = CollectionEntry<"food">["data"];
+
+const { title, name } = Astro.props;
+const description = name;
+const locale = i18next.language;
+---
+
+<html lang={locale}>
+  <head>
+    <BaseHead title={title} description={description} />
+
+    <style>
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        justify-content: center;
+        gap: var(--gap);
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header print={true} />
+
+    <main>
+      <section>
+        <slot />
+      </section>
+    </main>
+
+    <Footer />
+  </body>
+</html>

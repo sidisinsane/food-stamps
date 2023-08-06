@@ -1,0 +1,70 @@
+---
+import { LanguageSelector } from "astro-i18next/components";
+---
+
+<LanguageSelector
+  class="lang-select"
+  showFlag={false}
+  languageMapping={{ en: "English", de: "Deutsch" }}
+/>
+
+<style>
+  .lang-select {
+    /* reset */
+    appearance: none;
+    -webkit-appearance: none;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* layout 
+    position: fixed;
+    top: 1rem;
+    right: 1rem;*/
+
+    /* styling */
+    border: 0; /*1px solid #ccc;*/
+    background-color: transparent;
+    color: inherit;
+    border-radius: 4px;
+    display: inline-block;
+    font: inherit;
+    line-height: 1.5em;
+    /*padding: 0.5em 3.5em 0.5em 1em;*/
+    padding-inline-end: 3.5em;
+
+    /* arrow */
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%),
+      linear-gradient(to right, currentColor, currentColor);
+    /*background-position:
+      calc(100% - 20px) calc(1em + 2px),
+      calc(100% - 15px) calc(1em + 2px),
+      calc(100% - 2.5em) 0.5em;*/
+    background-position:
+      calc(100% - 20px) calc(0.5em + 2px),
+      calc(100% - 15px) calc(0.5em + 2px),
+      calc(100% - 2.5em) 0.125em;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 1.25em;
+    background-repeat: no-repeat;
+  }
+
+  .lang-select:focus {
+    background-image: linear-gradient(45deg, currentColor 50%, transparent 50%),
+      linear-gradient(135deg, transparent 50%, currentColor 50%),
+      linear-gradient(to right, currentColor, currentColor);
+    background-position:
+      calc(100% - 15px) 0.5em,
+      calc(100% - 20px) 0.5em,
+      calc(100% - 2.5em) 0.125em;
+    border-color: green;
+    outline: 0;
+  }
+
+  .lang-select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+  }
+</style>

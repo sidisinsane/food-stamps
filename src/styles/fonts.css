@@ -1,0 +1,40 @@
+/* --------------------------------------------------------------------------------------------------------------------
+
+Montserrat Variable Font
+https://fonts.google.com/specimen/Montserrat
+
+Scripts
++-----------------+--------+----------+--------------+-------+-----------+-------+-----------+------------+
+| Font            | arabic | cyrillic | cyrillic-ext | greek | greek-ext | latin | latin-ext | vietnamese |
++-----------------+--------+----------+--------------+-------+-----------+-------+-----------+------------+
+| Montserrat      |        | +        | +            |       |           | +     | +         |            |
++-----------------+--------+----------+--------------+-------+-----------+-------+-----------+------------+
+
+Styles & Weights
++-----------------+--------+--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+------+
+| Font            | normal | italic | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 1000 |
++-----------------+--------+--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+------+
+| Montserrat      | +      | +      | +   | +   | +   | +   | +   | +   | +   | +   | +   |      |
++-----------------+--------+--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+------+
+
+-------------------------------------------------------------------------------------------------------------------- */
+
+@font-face {
+  font-style: normal;
+  font-weight: 100 200 300 400 500 600 700 800 900;
+  size-adjust: 90%;
+  src: url("/assets/fonts/Montserrat/Montserrat-VariableFont_wght.ttf")
+    format("woff2-variations");
+  font-family: "Montserrat";
+  font-display: swap;
+}
+
+@font-face {
+  font-style: italic;
+  font-weight: 100 200 300 400 500 600 700 800 900;
+  size-adjust: 90%;
+  src: url("/assets/fonts/Montserrat/Montserrat-Italic-VariableFont_wght.ttf")
+    format("woff2-variations");
+  font-family: "Montserrat";
+  font-display: swap;
+}

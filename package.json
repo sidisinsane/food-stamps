@@ -1,0 +1,43 @@
+{
+  "name": "food-stamps",
+  "description": "Printable Food Stamps/Labels with ingredients for Jars and Canning.",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "sync": "astro sync",
+    "astro": "astro",
+    "docs": "jsdoc -c jsdoc.config.json",
+    "lint": "eslint . --ext .js,.mjs,.cjs,.ts",
+    "lint:fix": "eslint . --fix --ext .js,.mjs,.cjs,.ts",
+    "prettier": "prettier --check .",
+    "prettier:write": "prettier --write ."
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^0.19.7",
+    "@astrojs/rss": "^2.4.3",
+    "@astrojs/sitemap": "^2.0.1",
+    "@lunaticmuch/iso-3166": "^1.0.0",
+    "astro": "^2.9.6",
+    "astro-i18next": "^1.0.0-beta.21",
+    "astro-icon": "^0.8.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "autoprefixer": "^10.4.14",
+    "better-docs": "^2.7.2",
+    "clean-jsdoc-theme": "^4.2.9",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^8.9.0",
+    "jsdoc": "^4.0.2",
+    "postcss": "^8.4.27",
+    "prettier": "^3.0.0",
+    "prettier-plugin-astro": "^0.11.0",
+    "prettier-plugin-css-order": "^2.0.0"
+  }
+}

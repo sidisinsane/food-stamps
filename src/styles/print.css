@@ -1,0 +1,19 @@
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 1cm 1cm;
+  }
+
+  html,
+  body {
+    background-color: #ffffff !important;
+  }
+
+  section {
+    padding-block-start: 1cm;
+  }
+
+  .lang-selector {
+    display: none;
+  }
+}

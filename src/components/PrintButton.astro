@@ -1,0 +1,23 @@
+---
+import { Icon } from "astro-icon";
+---
+
+<button onclick="window.print()" aria-label="Print">
+  <Icon name="bootstrap-icons/printer" aria-hidden="true" />
+</button>
+
+<style>
+  button {
+    appearance: none;
+    color: currentColor;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  svg {
+    width: 24px;
+    height: auto;
+    fill: currentColor;
+  }
+</style>

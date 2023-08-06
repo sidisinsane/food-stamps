@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props {
+  datestring: string;
+  className?: any;
+  props?: HTMLAttributes<"time">;
+}
+
+const { datestring, className, ...props } = Astro.props;
+---
+
+<time
+  class:list={[className]}
+  datetime={new Date(Date.parse(datestring)).toISOString()}
+  {...props}
+>
+  {
+    new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(Date.parse(datestring)))
+  }
+</time>

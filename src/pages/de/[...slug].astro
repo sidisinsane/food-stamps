@@ -1,0 +1,24 @@
+---
+import i18next from "i18next";
+import { CollectionEntry, getCollection } from "astro:content";
+import FoodPost from "../../layouts/FoodPost.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("food");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+type Props = CollectionEntry<"food">;
+
+const post = Astro.props;
+const { Content } = await post.render();
+
+const locale = "de";
+i18next.changeLanguage(locale);
+---
+
+<FoodPost {...post.data}>
+  <Content />
+</FoodPost>

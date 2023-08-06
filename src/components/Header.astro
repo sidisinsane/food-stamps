@@ -1,0 +1,61 @@
+---
+import "dotenv/config";
+import { localizePath } from "astro-i18next";
+
+import PrintButton from "./PrintButton.astro";
+import LangSelect from "./LangSelect.astro";
+
+const { print = false } = Astro.props;
+
+const { SITE_TITLE } = process.env;
+---
+
+<header>
+  <nav>
+    <h1 class="site-title">
+      <a href={localizePath("/")} title={SITE_TITLE}>{SITE_TITLE}</a>
+    </h1>
+
+    <LangSelect />
+
+    {print && <PrintButton />}
+  </nav>
+</header>
+
+<style>
+  header {
+    background-color: var(--fg-color);
+    color: var(--bg-color);
+    box-shadow: var(--box-shadow);
+    padding-block: calc(0.5 * var(--gap));
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--gap);
+  }
+
+  nav h1 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+
+    border: 0.5px solid currentColor;
+    padding-inline: 0.25em;
+  }
+
+  nav h1 a {
+    text-decoration: none;
+    border: 0 !important;
+    display: block;
+    text-align: center;
+    padding: 0 !important;
+  }
+</style>

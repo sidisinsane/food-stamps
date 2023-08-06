@@ -1,0 +1,99 @@
+@import url("normalize.css");
+@import url("fonts.css");
+
+/* https://www.etsy.com/de/listing/608449601/modern-labels-for-jars-and-canning?variation0=2769543962 */
+:root {
+  --color-stone-50: #fafaf9;
+  --color-stone-100: #f5f5f4;
+  --color-stone-200: #e7e5e4;
+  --color-stone-300: #d6d3d1;
+  --color-stone-400: #a8a29e;
+  --color-stone-500: #78716c;
+  --color-stone-600: #57534e;
+  --color-stone-700: #44403c;
+  --color-stone-800: #292524;
+  --color-stone-900: #1c1917;
+  --color-stone-950: #0c0a09;
+  /**/
+
+  --accent: #2337ff;
+  --accent-dark: #000d8a;
+
+  --white: 255, 255, 255;
+  --black: 15, 18, 25;
+  --gray: 96, 115, 159;
+  --gray-light: 229, 233, 240;
+  --gray-dark: 34, 41, 57;
+  --gray-gradient: rgba(var(--gray-light), 50%), rgb(var(--white));
+  --box-shadow: 0 2px 6px rgba(var(--gray), 25%),
+    0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%);
+
+  --max-width: 1440px;
+  --gap: 1.5rem;
+
+  --fg-color: var(--color-stone-900);
+  --bg-color: var(--color-stone-200);
+  --fg-color-highlighted: var(--color-stone-600);
+  --bg-color-highlighted: var(--color-stone-100);
+  --bg-image: url("/assets/patterns/binding-light.png");
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gap: 3rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg-color: var(--color-stone-200);
+    --bg-color: var(--color-stone-900);
+    --fg-color-highlighted: var(--color-stone-100);
+    --bg-color-highlighted: var(--color-stone-600);
+  }
+}
+
+html.dark {
+  --fg-color: var(--color-stone-200);
+  --bg-color: var(--color-stone-900);
+  --fg-color-highlighted: var(--color-stone-100);
+  --bg-color-highlighted: var(--color-stone-600);
+}
+
+html.light {
+  --fg-color: var(--color-stone-900);
+  --bg-color: var(--color-stone-200);
+  --fg-color-highlighted: var(--color-stone-600);
+  --bg-color-highlighted: var(--color-stone-100);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-image: var(--bg-image);
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+  font-family: Montserrat, sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+body > * {
+  width: 100vw;
+}
+
+body > * > * {
+  width: var(--max-width);
+  max-width: calc(100% - (2 * var(--gap)));
+  margin-inline: auto;
+}
+
+body > main {
+  min-height: 100vh;
+  padding-block-start: calc(3 * var(--gap));
+  padding-block-end: var(--gap);
+}
