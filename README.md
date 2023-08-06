@@ -2,7 +2,8 @@
 
 Printable Food Stamps/Labels with ingredients for Jars and Canning.
 
-![Screenshot EN](/public/assets/img/screenshots/en.png)
+![Screenshot EN](https://github.com/sidisinsane/food-stamps/blob/409a26ae7de5dcbac4f8e1842aa3e8b8e753308e/public/assets/img/screenshots/en.png)
+![Screenshot Currywurst Sauce EN](https://github.com/sidisinsane/food-stamps/blob/409a26ae7de5dcbac4f8e1842aa3e8b8e753308e/public/assets/img/screenshots/en-currywurst-sauce.png)
 
 ## Getting Started
 
