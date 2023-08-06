@@ -51,7 +51,7 @@ This project is [build with Astro](https://docs.astro.build).
 ├── postcss.config.cjs
 ├── package.json
 ├── package-lock.json
-├──tsconfig.json
+├── tsconfig.json
 ├── CREDITS.md
 ├── README.md
 └── LICENSE
