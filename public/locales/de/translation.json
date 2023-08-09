@@ -12,7 +12,8 @@
     "lentils-green": "Grüne Linsen",
     "lentils-red": "Rote Linsen",
     "onion": "Zwiebel",
-    "star-anise": "Sternanis"
+    "star-anise": "Sternanis",
+    "kimchi": "Kimchi"
   },
   "category": {
     "legume": "Hülsenfrucht",
@@ -20,7 +21,8 @@
     "sauce-base": "Saucenbasis",
     "seasoning": "Gewürzmischung",
     "spice": "Gewürz",
-    "spice-paste": "Würzpaste"
+    "spice-paste": "Würzpaste",
+    "fermented": "Fermentiertes"
   },
   "ingredient": {
     "allspice": "Piment",
@@ -72,6 +74,14 @@
     "vinegar": "Essig",
     "vinegar-apple": "Apfelessig",
     "worcestershire-sauce": "Worcestershiresauce",
-    "gochugaru-red-pepper": "Gochugaru Chilipulver"
+    "gochugaru-red-pepper": "Gochugaru Chilipulver",
+    "napa-cabbage": "Chinakohl[|e]",
+    "rice-flour": "Reismehl",
+    "horseradish": "Meerrettich[|e]",
+    "parsnip": "Pastinake[|n]",
+    "carrot": "Karotte[|n]",
+    "scallion": "Lauchzwiebel[|n]",
+    "fish-sauce": "Fischsauce",
+    "water": "Wasser"
   }
 }

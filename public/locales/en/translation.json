@@ -12,7 +12,8 @@
     "lentils-green": "Green Lentils",
     "lentils-red": "Red Split Lentils",
     "onion": "Onion",
-    "star-anise": "Star Anise"
+    "star-anise": "Star Anise",
+    "kimchi": "Kimchi"
   },
   "category": {
     "legume": "Legume",
@@ -20,7 +21,8 @@
     "sauce-base": "Sauce base",
     "seasoning": "Seasoning",
     "spice": "Spice",
-    "spice-paste": "Spice paste"
+    "spice-paste": "Spice paste",
+    "fermented": "Fermented"
   },
   "ingredient": {
     "allspice": "Allspice",
@@ -72,6 +74,14 @@
     "vinegar": "Vinegar",
     "vinegar-apple": "Apple vinegar",
     "worcestershire-sauce": "Worcestershire sauce",
-    "gochugaru-red-pepper": "Gochugaru Red Pepper"
+    "gochugaru-red-pepper": "Gochugaru Red Pepper",
+    "napa-cabbage": "Napa cabbage[|s]",
+    "rice-flour": "Rice flour",
+    "horseradish": "Horseradish[|es]",
+    "parsnip": "Parsnip[|s]",
+    "carrot": "Carrot[|s]",
+    "scallion": "Scallion[|s]",
+    "fish-sauce": "Fish sauce",
+    "water": "Water"
   }
 }
