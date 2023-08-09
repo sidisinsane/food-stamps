@@ -7,7 +7,7 @@
     "currywurst-sauce": "Currywurst Sauce",
     "garam-masala": "Garam Masala",
     "ginger": "Ginger",
-    "gochugaru-paprika-powder": "Gochugaru Paprika Powder",
+    "gochugaru-red-pepper": "Gochugaru Red Pepper",
     "lemon": "Lemon",
     "lentils-green": "Green Lentils",
     "lentils-red": "Red Split Lentils",
@@ -71,6 +71,7 @@
     "tumeric": "Tumeric",
     "vinegar": "Vinegar",
     "vinegar-apple": "Apple vinegar",
-    "worcestershire-sauce": "Worcestershire sauce"
+    "worcestershire-sauce": "Worcestershire sauce",
+    "gochugaru-red-pepper": "Gochugaru Red Pepper"
   }
 }
