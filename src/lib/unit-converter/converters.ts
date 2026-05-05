@@ -128,6 +128,10 @@ function lookupUnitOfMeasure(
     return obj["unitCode"] === unitCode;
   });
 
+  if (obj.length === 0) {
+    throw new Error(`Unknown unit code: "${unitCode}"`);
+  }
+
   const objBase: UnitOfMeasureType[] = UNITS_OF_MEASURE.filter((objBase) => {
     return (
       objBase["quantity"] === obj[0].quantity && objBase["baseFactor"] == 1
