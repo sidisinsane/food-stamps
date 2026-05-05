@@ -258,7 +258,7 @@ export function groupIngredientsByQuantity(
   const groupedIngredients = [];
   const groupedMap = new Map<
     string,
-    { names: (string | string[])[]; requiredQuantity: RequiredQuantityType }
+    { names: string[]; requiredQuantity: RequiredQuantityType }
   >();
 
   for (const ingredient of ingredients) {
@@ -267,9 +267,9 @@ export function groupIngredientsByQuantity(
     const key = value + (unitCode as UNCEFACTUnitCodeType);
 
     if (groupedMap.has(key)) {
-      groupedMap.get(key)!.names.push(name);
+      groupedMap.get(key)!.names.push(name as string);
     } else {
-      groupedMap.set(key, { names: [name], requiredQuantity });
+      groupedMap.set(key, { names: [name as string], requiredQuantity });
     }
   }
 
