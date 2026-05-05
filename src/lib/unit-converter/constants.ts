@@ -337,7 +337,7 @@ export const QUANTITY_GOALS: Record<string, Record<string, number>> = {
 };
 
 /** @type {import('./types.js').UNCEFACTUnitCodeType[]} */
-export const EXCLUDED_NON_US: UNCEFACTUnitCodeType[] = [
+export const EXCLUDED_FOR_NON_US: UNCEFACTUnitCodeType[] = [
   "FAH",
   "GLI",
   "PTI",

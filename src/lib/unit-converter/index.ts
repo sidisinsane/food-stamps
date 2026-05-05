@@ -10,7 +10,7 @@ import type {
 } from "./types";
 
 import {
-  EXCLUDED_NON_US,
+  EXCLUDED_FOR_NON_US,
   EXCLUDED_UNITS_OF_MEASURE,
   EXCLUDED_US,
   QUANTITY_GOALS,
@@ -20,7 +20,7 @@ import {
 import { convertFromBase, convertToBase } from "./converters";
 
 function getBestMatchOpts(locale: string = "en", debug?: boolean) {
-  const excludedLocale = locale == "en" ? EXCLUDED_US : EXCLUDED_NON_US;
+  const excludedLocale = locale == "en" ? EXCLUDED_US : EXCLUDED_FOR_NON_US;
   const excluded = [...EXCLUDED_UNITS_OF_MEASURE, ...excludedLocale];
 
   if (debug) {
@@ -40,8 +40,8 @@ function getAvailableUnits(
 
   const res = UNITS_OF_MEASURE.filter(
     (unit) =>
-      unit["quantity"] == quantity &&
-      !options.exclude.includes(unit["unitCode"]),
+      unit.quantity == quantity &&
+      !options.exclude.includes(unit.unitCode),
   );
 
   if (debug) {
@@ -88,13 +88,14 @@ function getClosest(
   }
 
   const goals = QUANTITY_GOALS[quantity];
+  // "default" is a reserved word and must use bracket notation
   const goal = goals?.[locale] ?? goals?.["default"] ?? 250;
 
-  const valuesArr = convertedToAllAvailableUnits.map((unit) => unit["value"]);
+  const valuesArr = convertedToAllAvailableUnits.map((unit) => unit.value);
   const closestVal = closest(valuesArr, goal);
 
   const res = convertedToAllAvailableUnits.filter(
-    (unit) => unit["value"] == closestVal,
+    (unit) => unit.value == closestVal,
   );
 
   if (debug) {
@@ -116,7 +117,7 @@ function getBestMatch(props: MatchProps) {
   // 2. Get all available units
   const availableUnits = getAvailableUnits(
     locale,
-    convertedToBase["quantity"],
+    convertedToBase.quantity,
     debug,
   );
   // 3. Convert to all available units
@@ -129,7 +130,7 @@ function getBestMatch(props: MatchProps) {
   const closestValMatch = getClosest(
     convertedToAllAvailableUnits,
     locale,
-    convertedToBase["quantity"],
+    convertedToBase.quantity,
     debug,
   );
 
@@ -190,20 +191,21 @@ function getMatch(props: MatchProps) {
 
   if (unitCode) {
     const match = getBestMatch(props);
-    newValue = match["value"] as number;
-    newSymbol = match["symbol"];
+    newValue = match.value as number;
+    newSymbol = match.symbol;
   }
 
   const valueStr: string = formatValue(newValue, locale);
 
-  const res: any = {};
-  res["value"] = valueStr;
-  res["symbol"] = newSymbol;
+  const res: { value: string; symbol: string } = {
+    value: valueStr,
+    symbol: newSymbol,
+  };
 
   if (debug) {
     console.log("");
     console.log("--- getMatch ---");
-    console.log(`${res["value"]} ${res["symbol"]}`);
+    console.log(`${res.value} ${res.symbol}`);
     console.log(res);
     console.log("--- getMatch ---");
   }
@@ -214,15 +216,15 @@ function getMatch(props: MatchProps) {
 function itemRequiredQuantity(props: ItemRequiredProps) {
   const { locale, item, debug } = props;
 
-  const requiredQuantity: RequiredQuantityType = item["requiredQuantity"];
-  const value = requiredQuantity["value"] as number;
-  const unitCode = requiredQuantity["unitCode"];
+  const requiredQuantity: RequiredQuantityType = item.requiredQuantity;
+  const value = requiredQuantity.value as number;
+  const unitCode = requiredQuantity.unitCode;
 
   const match = getMatch({
-    locale: locale,
-    value: value,
-    unitCode: unitCode,
-    debug: debug,
+    locale,
+    value,
+    unitCode,
+    debug,
   } as MatchProps);
 
   if (debug) {
@@ -284,7 +286,7 @@ export function itemRequiredQuantityValue(props: ItemRequiredProps) {
   const { debug } = props;
 
   const match = itemRequiredQuantity(props);
-  const value = match["value"];
+  const value = match.value;
 
   if (debug) {
     console.log("");
@@ -301,7 +303,7 @@ export function itemRequiredQuantitySymbol(props: ItemRequiredProps) {
   const { debug } = props;
 
   const match = itemRequiredQuantity(props);
-  const symbol = match["symbol"];
+  const symbol = match.symbol;
 
   if (debug) {
     console.log("");
