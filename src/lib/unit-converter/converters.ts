@@ -4,6 +4,7 @@ import { UNITS_OF_MEASURE } from "./constants";
 import type {
   LookupUnitOfMeasureType,
   ResultSetType,
+  UNCEFACTUnitCodeType,
   UnitOfMeasureType,
 } from "./types";
 
@@ -12,7 +13,7 @@ import type {
  * and returns an object containing the converted value and its unit information.
  * @public
  * @param {number} value - The value to be converted.
- * @param {string} unitCode - The unit code of the original value (e.g., "GRM" for grams, "MLT" for milliliters).
+ * @param {UNCEFACTUnitCodeType} unitCode - The unit code of the original value (e.g., "GRM" for grams, "MLT" for milliliters).
  * @param {boolean} [debug] - Optional flag to enable debug logging. Default is false.
  *
  * @returns {ResultSetType} - An object containing the following properties:
@@ -27,7 +28,7 @@ import type {
  */
 export function convertToBase(
   value: number,
-  unitCode: string,
+  unitCode: UNCEFACTUnitCodeType,
   debug?: boolean,
 ): ResultSetType {
   const lookup = lookupUnitOfMeasure(unitCode, debug);
@@ -37,11 +38,12 @@ export function convertToBase(
   const symbol = lookup.result.symbol;
   const offset = lookup.result.baseOffset ?? 0;
 
-  const res: any = {};
-  res["unitCode"] = baseUnitCode;
-  res["symbol"] = symbol;
-  res["quantity"] = quantity;
-  res["value"] = value * baseFactor + offset;
+  const res: ResultSetType = {
+    unitCode: baseUnitCode,
+    symbol,
+    quantity,
+    value: value * baseFactor + offset,
+  };
 
   if (debug) {
     console.log("");
@@ -61,7 +63,7 @@ export function convertToBase(
  * and its unit information.
  * @public
  * @param {number} value - The value in its base unit representation.
- * @param {string} unitCode - The unit code of the target unit representation
+ * @param {UNCEFACTUnitCodeType} unitCode - The unit code of the target unit representation
  * (e.g., "KGM" for kilograms, "FAH" for Fahrenheit).
  * @param {boolean} [debug] - Optional flag to enable debug logging. Default is false.
  *
@@ -77,7 +79,7 @@ export function convertToBase(
  */
 export function convertFromBase(
   value: number,
-  unitCode: string,
+  unitCode: UNCEFACTUnitCodeType,
   debug?: boolean,
 ): ResultSetType {
   const lookup = lookupUnitOfMeasure(unitCode, debug);
@@ -87,11 +89,12 @@ export function convertFromBase(
   const symbol = lookup.result.symbol;
   const offset = lookup.result.baseOffset ?? 0;
 
-  const res: any = {};
-  res["unitCode"] = unitCode;
-  res["symbol"] = symbol;
-  res["quantity"] = quantity;
-  res["value"] = (value - offset) / (baseFactor);
+  const res: ResultSetType = {
+    unitCode,
+    symbol,
+    quantity,
+    value: (value - offset) / baseFactor,
+  };
 
   if (debug) {
     console.log("");
@@ -108,7 +111,7 @@ export function convertFromBase(
 /**
  * Looks up unit of measure information based on the provided unit code.
  *
- * @param {string} unitCode - The unit code to look up (e.g., "g" for grams, "ml" for milliliters).
+ * @param {UNCEFACTUnitCodeType} unitCode - The unit code to look up (e.g., "GRM" for grams, "MLT" for milliliters).
  * @returns {LookupUnitOfMeasureType} - An object containing the following key-value pairs:
  *  - "result": An object representing the unit of measure information that matches the provided unitCode.
  *  - "base": An object representing the base unit of measure information for the matched unit.
@@ -121,7 +124,7 @@ export function convertFromBase(
  * console.log(unitInfoMap.get("base"));   // Output: { quantity: "time", unitCode: "SEC", symbol: "s", baseFactor: 1 }
  */
 function lookupUnitOfMeasure(
-  unitCode: string,
+  unitCode: UNCEFACTUnitCodeType,
   debug: boolean = false,
 ): LookupUnitOfMeasureType {
   const obj = UNITS_OF_MEASURE.filter((obj) => {
@@ -138,9 +141,10 @@ function lookupUnitOfMeasure(
     );
   });
 
-  const res: any = {};
-  res["result"] = obj[0] as UnitOfMeasureType;
-  res["base"] = objBase[0] as UnitOfMeasureType;
+  const res: LookupUnitOfMeasureType = {
+    result: obj[0],
+    base: objBase[0],
+  };
 
   if (debug) {
     console.log("");
