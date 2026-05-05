@@ -256,32 +256,25 @@ export function groupIngredientsByQuantity(
   ingredients: SupplyType[],
 ): SupplyType[] {
   const groupedIngredients = [];
-  const groupedNames = new Map();
+  const groupedMap = new Map<
+    string,
+    { names: (string | string[])[]; requiredQuantity: RequiredQuantityType }
+  >();
 
   for (const ingredient of ingredients) {
     const { name, requiredQuantity } = ingredient as SupplyType;
     const { value, unitCode } = requiredQuantity as RequiredQuantityType;
     const key = value + (unitCode as UNCEFACTUnitCodeType);
 
-    if (groupedNames.has(key)) {
-      groupedNames.get(key).push(name);
+    if (groupedMap.has(key)) {
+      groupedMap.get(key)!.names.push(name);
     } else {
-      groupedNames.set(key, [name]);
+      groupedMap.set(key, { names: [name], requiredQuantity });
     }
   }
 
-  for (const [, names] of groupedNames) {
-    const { value, unitCode } = ingredients.find(
-      (ingredient) => ingredient.name === names[0],
-    )?.requiredQuantity as RequiredQuantityType;
-
-    groupedIngredients.push({
-      name: names,
-      requiredQuantity: {
-        value,
-        unitCode,
-      },
-    });
+  for (const [, { names, requiredQuantity }] of groupedMap) {
+    groupedIngredients.push({ name: names, requiredQuantity });
   }
 
   return groupedIngredients;
