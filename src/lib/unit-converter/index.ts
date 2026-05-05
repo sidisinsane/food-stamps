@@ -10,16 +10,17 @@ import type {
 } from "./types";
 
 import {
-  EXCLUDED_NON_US,
+  EXCLUDED_FOR_NON_US,
   EXCLUDED_UNITS_OF_MEASURE,
   EXCLUDED_US,
+  QUANTITY_GOALS,
   UNITS_OF_MEASURE,
 } from "./constants";
 
 import { convertFromBase, convertToBase } from "./converters";
 
 function getBestMatchOpts(locale: string = "en", debug?: boolean) {
-  const excludedLocale = locale == "en" ? EXCLUDED_US : EXCLUDED_NON_US;
+  const excludedLocale = locale == "en" ? EXCLUDED_US : EXCLUDED_FOR_NON_US;
   const excluded = [...EXCLUDED_UNITS_OF_MEASURE, ...excludedLocale];
 
   if (debug) {
@@ -27,12 +28,7 @@ function getBestMatchOpts(locale: string = "en", debug?: boolean) {
     console.log(excluded);
   }
 
-  return {
-    exclude: excluded,
-    minValue: 1,
-    maxValue: 999,
-    preferMax: false,
-  };
+  return { exclude: excluded };
 }
 
 function getAvailableUnits(
@@ -44,8 +40,8 @@ function getAvailableUnits(
 
   const res = UNITS_OF_MEASURE.filter(
     (unit) =>
-      unit["quantity"] == quantity &&
-      !options.exclude.includes(unit["unitCode"]),
+      unit.quantity == quantity &&
+      !options.exclude.includes(unit.unitCode),
   );
 
   if (debug) {
@@ -81,15 +77,25 @@ function convertToAllAvailableUnits(
 
 function getClosest(
   convertedToAllAvailableUnits: ResultSetType[],
-  goal?: number,
+  locale: string,
+  quantity: string,
   debug?: boolean,
 ) {
-  goal = goal || 250;
-  const valuesArr = convertedToAllAvailableUnits.map((unit) => unit["value"]);
+  // When only one unit is available (e.g. temperature per locale),
+  // skip goal lookup and return it directly.
+  if (convertedToAllAvailableUnits.length === 1) {
+    return convertedToAllAvailableUnits[0];
+  }
+
+  const goals = QUANTITY_GOALS[quantity];
+  // "default" is a reserved word and must use bracket notation
+  const goal = goals?.[locale] ?? goals?.["default"] ?? 250;
+
+  const valuesArr = convertedToAllAvailableUnits.map((unit) => unit.value);
   const closestVal = closest(valuesArr, goal);
 
   const res = convertedToAllAvailableUnits.filter(
-    (unit) => unit["value"] == closestVal,
+    (unit) => unit.value == closestVal,
   );
 
   if (debug) {
@@ -111,7 +117,7 @@ function getBestMatch(props: MatchProps) {
   // 2. Get all available units
   const availableUnits = getAvailableUnits(
     locale,
-    convertedToBase["quantity"],
+    convertedToBase.quantity,
     debug,
   );
   // 3. Convert to all available units
@@ -121,7 +127,12 @@ function getBestMatch(props: MatchProps) {
     debug,
   );
   // 4. Get closest match
-  const closestValMatch = getClosest(convertedToAllAvailableUnits, 250, debug);
+  const closestValMatch = getClosest(
+    convertedToAllAvailableUnits,
+    locale,
+    convertedToBase.quantity,
+    debug,
+  );
 
   if (debug) {
     console.log("");
@@ -174,28 +185,27 @@ function formatValue(value: number, locale: string = "en") {
 
 function getMatch(props: MatchProps) {
   const { locale, value, unitCode, debug } = props;
-  // const opts = getBestMatchOpts(locale);
 
   let newValue = value;
   let newSymbol = "";
 
   if (unitCode) {
     const match = getBestMatch(props);
-    newValue = match["value"] as number;
-    newSymbol = match["symbol"];
+    newValue = match.value as number;
+    newSymbol = match.symbol;
   }
 
   const valueStr: string = formatValue(newValue, locale);
 
-  const res: any = {};
-  res["value"] = valueStr;
-  //res["valueStr"] = valueStr;
-  res["symbol"] = newSymbol;
+  const res: { value: string; symbol: string } = {
+    value: valueStr,
+    symbol: newSymbol,
+  };
 
   if (debug) {
     console.log("");
     console.log("--- getMatch ---");
-    console.log(`${res["value"]} ${res["symbol"]}`);
+    console.log(`${res.value} ${res.symbol}`);
     console.log(res);
     console.log("--- getMatch ---");
   }
@@ -206,15 +216,15 @@ function getMatch(props: MatchProps) {
 function itemRequiredQuantity(props: ItemRequiredProps) {
   const { locale, item, debug } = props;
 
-  const requiredQuantity: RequiredQuantityType = item["requiredQuantity"];
-  const value = requiredQuantity["value"] as number;
-  const unitCode = requiredQuantity["unitCode"];
+  const requiredQuantity: RequiredQuantityType = item.requiredQuantity;
+  const value = requiredQuantity.value as number;
+  const unitCode = requiredQuantity.unitCode;
 
   const match = getMatch({
-    locale: locale,
-    value: value,
-    unitCode: unitCode,
-    debug: debug,
+    locale,
+    value,
+    unitCode,
+    debug,
   } as MatchProps);
 
   if (debug) {
@@ -248,32 +258,25 @@ export function groupIngredientsByQuantity(
   ingredients: SupplyType[],
 ): SupplyType[] {
   const groupedIngredients = [];
-  const groupedNames = new Map();
+  const groupedMap = new Map<
+    string,
+    { names: string[]; requiredQuantity: RequiredQuantityType }
+  >();
 
   for (const ingredient of ingredients) {
     const { name, requiredQuantity } = ingredient as SupplyType;
     const { value, unitCode } = requiredQuantity as RequiredQuantityType;
     const key = value + (unitCode as UNCEFACTUnitCodeType);
 
-    if (groupedNames.has(key)) {
-      groupedNames.get(key).push(name);
+    if (groupedMap.has(key)) {
+      groupedMap.get(key)!.names.push(name as string);
     } else {
-      groupedNames.set(key, [name]);
+      groupedMap.set(key, { names: [name as string], requiredQuantity });
     }
   }
 
-  for (const [, names] of groupedNames) {
-    const { value, unitCode } = ingredients.find(
-      (ingredient) => ingredient.name === names[0],
-    )?.requiredQuantity as RequiredQuantityType;
-
-    groupedIngredients.push({
-      name: names,
-      requiredQuantity: {
-        value,
-        unitCode,
-      },
-    });
+  for (const [, { names, requiredQuantity }] of groupedMap) {
+    groupedIngredients.push({ name: names, requiredQuantity });
   }
 
   return groupedIngredients;
@@ -283,7 +286,7 @@ export function itemRequiredQuantityValue(props: ItemRequiredProps) {
   const { debug } = props;
 
   const match = itemRequiredQuantity(props);
-  const value = match["value"];
+  const value = match.value;
 
   if (debug) {
     console.log("");
@@ -300,7 +303,7 @@ export function itemRequiredQuantitySymbol(props: ItemRequiredProps) {
   const { debug } = props;
 
   const match = itemRequiredQuantity(props);
-  const symbol = match["symbol"];
+  const symbol = match.symbol;
 
   if (debug) {
     console.log("");

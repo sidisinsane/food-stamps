@@ -4,6 +4,7 @@ import { UNITS_OF_MEASURE } from "./constants";
 import type {
   LookupUnitOfMeasureType,
   ResultSetType,
+  UNCEFACTUnitCodeType,
   UnitOfMeasureType,
 } from "./types";
 
@@ -12,7 +13,7 @@ import type {
  * and returns an object containing the converted value and its unit information.
  * @public
  * @param {number} value - The value to be converted.
- * @param {string} unitCode - The unit code of the original value (e.g., "GRM" for grams, "MLT" for milliliters).
+ * @param {UNCEFACTUnitCodeType} unitCode - The unit code of the original value (e.g., "GRM" for grams, "MLT" for milliliters).
  * @param {boolean} [debug] - Optional flag to enable debug logging. Default is false.
  *
  * @returns {ResultSetType} - An object containing the following properties:
@@ -27,39 +28,28 @@ import type {
  */
 export function convertToBase(
   value: number,
-  unitCode: string,
+  unitCode: UNCEFACTUnitCodeType,
   debug?: boolean,
 ): ResultSetType {
   const lookup = lookupUnitOfMeasure(unitCode, debug);
-  const baseFactor = lookup.result.baseFactor;
+  const baseFactor = lookup.result.baseFactor ?? 1;
+  const baseUnitCode = lookup.base.unitCode;
+  const quantity = lookup.base.quantity;
+  const symbol = lookup.result.symbol;
+  const offset = lookup.result.baseOffset ?? 0;
 
-  const res: any = {};
-  res["unitCode"] = lookup.base.unitCode;
-  res["symbol"] = lookup.base.symbol;
-  res["quantity"] = lookup.base.quantity;
+  const res: ResultSetType = {
+    unitCode: baseUnitCode,
+    symbol,
+    quantity,
+    value: value * baseFactor + offset,
+  };
 
   if (debug) {
     console.log("");
     console.log("--- convertToBase ---");
-  }
-
-  if (baseFactor) {
-    res["value"] = value * baseFactor;
-
-    if (debug) {
-      console.log(
-        `${value} ${unitCode} equals ${res["value"]} ${res["unitCode"]}`,
-      );
-      console.log(res);
-    }
-  } else {
-    if (debug) {
-      console.log("THIS MUST BE TEMPERATURE...");
-      console.log(res);
-    }
-  }
-
-  if (debug) {
+    console.log(`${value} ${unitCode} equals ${res["value"]} ${baseUnitCode}`);
+    console.log(res);
     console.log("--- convertToBase ---");
     console.log("");
   }
@@ -73,7 +63,7 @@ export function convertToBase(
  * and its unit information.
  * @public
  * @param {number} value - The value in its base unit representation.
- * @param {string} unitCode - The unit code of the target unit representation
+ * @param {UNCEFACTUnitCodeType} unitCode - The unit code of the target unit representation
  * (e.g., "KGM" for kilograms, "FAH" for Fahrenheit).
  * @param {boolean} [debug] - Optional flag to enable debug logging. Default is false.
  *
@@ -89,30 +79,22 @@ export function convertToBase(
  */
 export function convertFromBase(
   value: number,
-  unitCode: string,
+  unitCode: UNCEFACTUnitCodeType,
   debug?: boolean,
 ): ResultSetType {
   const lookup = lookupUnitOfMeasure(unitCode, debug);
-  const baseFactor = lookup.result.baseFactor;
+  const baseFactor = lookup.result.baseFactor ?? 1;
   const baseUnitCode = lookup.base.unitCode;
+  const quantity = lookup.base.quantity;
   const symbol = lookup.result.symbol;
+  const offset = lookup.result.baseOffset ?? 0;
 
-  const res: any = {};
-  res["unitCode"] = unitCode;
-  res["symbol"] = symbol;
-  res["quantity"] = lookup.base.quantity;
-
-  if (!baseFactor) {
-    if (unitCode === "FAH") {
-      res["value"] = convertFahToCel(value);
-    } else {
-      res["value"] = value;
-    }
-  }
-
-  if (baseFactor) {
-    res["value"] = value / baseFactor;
-  }
+  const res: ResultSetType = {
+    unitCode,
+    symbol,
+    quantity,
+    value: (value - offset) / baseFactor,
+  };
 
   if (debug) {
     console.log("");
@@ -127,37 +109,9 @@ export function convertFromBase(
 }
 
 /**
- * Converts Fahrenheit to Celsius.
- * @public
- * @param {number} fah - The temperature in Fahrenheit.
- * @returns {number} - The temperature in Celsius.
- *
- * @example
- * const celsiusValue = convertFahToCel(98.6);
- * console.log(celsiusValue); // Output: 37
- */
-export function convertFahToCel(fah: number): number {
-  return ((fah - 32) * 5) / 9;
-}
-
-/**
- * Converts Celsius to Fahrenheit.
- * @public
- * @param {number} cel - The temperature in Celsius.
- * @returns {number} - The temperature in Fahrenheit.
- *
- * @example
- * const fahrenheitValue = convertCelToFah(37);
- * console.log(fahrenheitValue); // Output: 98.6
- */
-export function convertCelToFah(cel: number): number {
-  return (cel * 9) / 5 + 32;
-}
-
-/**
  * Looks up unit of measure information based on the provided unit code.
  *
- * @param {string} unitCode - The unit code to look up (e.g., "g" for grams, "ml" for milliliters).
+ * @param {UNCEFACTUnitCodeType} unitCode - The unit code to look up (e.g., "GRM" for grams, "MLT" for milliliters).
  * @returns {LookupUnitOfMeasureType} - An object containing the following key-value pairs:
  *  - "result": An object representing the unit of measure information that matches the provided unitCode.
  *  - "base": An object representing the base unit of measure information for the matched unit.
@@ -170,12 +124,16 @@ export function convertCelToFah(cel: number): number {
  * console.log(unitInfoMap.get("base"));   // Output: { quantity: "time", unitCode: "SEC", symbol: "s", baseFactor: 1 }
  */
 function lookupUnitOfMeasure(
-  unitCode: string,
+  unitCode: UNCEFACTUnitCodeType,
   debug: boolean = false,
 ): LookupUnitOfMeasureType {
   const obj = UNITS_OF_MEASURE.filter((obj) => {
     return obj["unitCode"] === unitCode;
   });
+
+  if (obj.length === 0) {
+    throw new Error(`Unknown unit code: "${unitCode}"`);
+  }
 
   const objBase: UnitOfMeasureType[] = UNITS_OF_MEASURE.filter((objBase) => {
     return (
@@ -183,9 +141,10 @@ function lookupUnitOfMeasure(
     );
   });
 
-  const res: any = {};
-  res["result"] = obj[0] as UnitOfMeasureType;
-  res["base"] = objBase[0] as UnitOfMeasureType;
+  const res: LookupUnitOfMeasureType = {
+    result: obj[0],
+    base: objBase[0],
+  };
 
   if (debug) {
     console.log("");
