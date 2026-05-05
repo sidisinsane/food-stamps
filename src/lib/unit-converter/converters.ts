@@ -31,35 +31,23 @@ export function convertToBase(
   debug?: boolean,
 ): ResultSetType {
   const lookup = lookupUnitOfMeasure(unitCode, debug);
-  const baseFactor = lookup.result.baseFactor;
+  const baseFactor = lookup.result.baseFactor ?? 1;
+  const baseUnitCode = lookup.base.unitCode;
+  const quantity = lookup.base.quantity;
+  const symbol = lookup.result.symbol;
+  const offset = lookup.result.baseOffset ?? 0;
 
   const res: any = {};
-  res["unitCode"] = lookup.base.unitCode;
-  res["symbol"] = lookup.base.symbol;
-  res["quantity"] = lookup.base.quantity;
+  res["unitCode"] = baseUnitCode;
+  res["symbol"] = symbol;
+  res["quantity"] = quantity;
+  res["value"] = value * baseFactor + offset;
 
   if (debug) {
     console.log("");
     console.log("--- convertToBase ---");
-  }
-
-  if (baseFactor) {
-    res["value"] = value * baseFactor;
-
-    if (debug) {
-      console.log(
-        `${value} ${unitCode} equals ${res["value"]} ${res["unitCode"]}`,
-      );
-      console.log(res);
-    }
-  } else {
-    if (debug) {
-      console.log("THIS MUST BE TEMPERATURE...");
-      console.log(res);
-    }
-  }
-
-  if (debug) {
+    console.log(`${value} ${unitCode} equals ${res["value"]} ${baseUnitCode}`);
+    console.log(res);
     console.log("--- convertToBase ---");
     console.log("");
   }
@@ -93,26 +81,17 @@ export function convertFromBase(
   debug?: boolean,
 ): ResultSetType {
   const lookup = lookupUnitOfMeasure(unitCode, debug);
-  const baseFactor = lookup.result.baseFactor;
+  const baseFactor = lookup.result.baseFactor ?? 1;
   const baseUnitCode = lookup.base.unitCode;
+  const quantity = lookup.base.quantity;
   const symbol = lookup.result.symbol;
+  const offset = lookup.result.baseOffset ?? 0;
 
   const res: any = {};
   res["unitCode"] = unitCode;
   res["symbol"] = symbol;
-  res["quantity"] = lookup.base.quantity;
-
-  if (!baseFactor) {
-    if (unitCode === "FAH") {
-      res["value"] = convertFahToCel(value);
-    } else {
-      res["value"] = value;
-    }
-  }
-
-  if (baseFactor) {
-    res["value"] = value / baseFactor;
-  }
+  res["quantity"] = quantity;
+  res["value"] = (value - offset) / (baseFactor);
 
   if (debug) {
     console.log("");
@@ -124,34 +103,6 @@ export function convertFromBase(
   }
 
   return res;
-}
-
-/**
- * Converts Fahrenheit to Celsius.
- * @public
- * @param {number} fah - The temperature in Fahrenheit.
- * @returns {number} - The temperature in Celsius.
- *
- * @example
- * const celsiusValue = convertFahToCel(98.6);
- * console.log(celsiusValue); // Output: 37
- */
-export function convertFahToCel(fah: number): number {
-  return ((fah - 32) * 5) / 9;
-}
-
-/**
- * Converts Celsius to Fahrenheit.
- * @public
- * @param {number} cel - The temperature in Celsius.
- * @returns {number} - The temperature in Fahrenheit.
- *
- * @example
- * const fahrenheitValue = convertCelToFah(37);
- * console.log(fahrenheitValue); // Output: 98.6
- */
-export function convertCelToFah(cel: number): number {
-  return (cel * 9) / 5 + 32;
 }
 
 /**

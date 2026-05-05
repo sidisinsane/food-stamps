@@ -35,7 +35,7 @@ type ISQSymbolType = "m" | "kg" | "s" | "K" | "m²" | "m³";
 
 /**
  * Excerpt of UN/CEFACT Quantity Unit Codes
- * @typedef {("MTR"|"DMT"|"CMT"|"MMT"|"INH"|"FOT"|"KGM"|"GRM"|"MRM"|"LBR"|"ONZ"|"SEC"|"MIN"|"HUR"|"DAY"|"WEE"|"MON"|"ANN"|"CEL"|"FAH"|"MTK"|"DMK"|"CMK"|"MMK"|"INK"|"FTK"|"MTQ"|"LTR"|"DLT"|"CLT"|"MLT"|"GLI"|"PTI"|"QTI"|"OZI"|"GLL"|"PTL"|"QTL"|"OZA"|"G21"|"G24"|"G25")} UNCEFACTUnitCodeType
+ * @typedef {("MTR"|"DMT"|"CMT"|"MMT"|"INH"|"FOT"|"KGM"|"GRM"|"MRM"|"LBR"|"ONZ"|"SEC"|"MIN"|"HUR"|"DAY"|"WEE"|"MON"|"ANN"|"KEL"|"CEL"|"FAH"|"MTK"|"DMK"|"CMK"|"MMK"|"INK"|"FTK"|"MTQ"|"LTR"|"DLT"|"CLT"|"MLT"|"GLI"|"PTI"|"QTI"|"OZI"|"GLL"|"PTL"|"QTL"|"OZA"|"G21"|"G24"|"G25")} UNCEFACTUnitCodeType
  * @see https://unece.org/sites/default/files/2021-06/rec20_Rev17e-2021.xlsx
  */
 export type UNCEFACTUnitCodeType =
@@ -57,6 +57,7 @@ export type UNCEFACTUnitCodeType =
   | "WEE"
   | "MON"
   | "ANN"
+  | "KEL"
   | "CEL"
   | "FAH"
   | "MTK"
@@ -86,7 +87,7 @@ export type UNCEFACTUnitCodeType =
  * @description Excerpt of UN/CEFACT Quantity Unit Symbols
  * - tablespoon (US) -> tbsp.
  * - teaspoon (US) -> tsp.
- * @typedef {("m"|"dm"|"cm"|"mm"|"in"|"ft"|"kg"|"g"|"mg"|"lb"|"oz"|"s"|"min"|"h"|"d"|"wk"|"mo"|"y"|"°C"|"°F"|"m²"|"dm²"|"cm²"|"mm²"|"in²"|"ft²"|"m³"|"l"|"dl"|"cl"|"ml"|"gal (UK)"|"pt (UK)"|"qt (UK)"|"fl oz (UK)"|"gal (US)"|"liq pt (US)"|"liq qt (US)"|"fl oz (US)"|"cup (US)"|"tbsp."|"tsp.")} UNCEFACTUnitSymbolType
+ * @typedef {("m"|"dm"|"cm"|"mm"|"in"|"ft"|"kg"|"g"|"mg"|"lb"|"oz"|"s"|"min"|"h"|"d"|"wk"|"mo"|"y"|"°K"|"°C"|"°F"|"m²"|"dm²"|"cm²"|"mm²"|"in²"|"ft²"|"m³"|"l"|"dl"|"cl"|"ml"|"gal (UK)"|"pt (UK)"|"qt (UK)"|"fl oz (UK)"|"gal (US)"|"liq pt (US)"|"liq qt (US)"|"fl oz (US)"|"cup (US)"|"tbsp."|"tsp.")} UNCEFACTUnitSymbolType
  * @see https://unece.org/sites/default/files/2021-06/rec20_Rev17e-2021.xlsx
  */
 type UNCEFACTUnitSymbolType =
@@ -108,6 +109,7 @@ type UNCEFACTUnitSymbolType =
   | "wk"
   | "mo"
   | "y"
+  | "°K"
   | "°C"
   | "°F"
   | "m²"
@@ -154,6 +156,7 @@ export interface SIUnitType {
  * @property {UNCEFACTUnitCodeType} unitCode
  * @property {UNCEFACTUnitSymbolType} symbol
  * @property {number} [baseFactor] - Base unit conversion factor
+ * @property {number} [baseOffset] - Base unit offset for interval scales
  * @see https://unece.org/sites/default/files/2021-06/rec20_Rev17e-2021.xlsx
  */
 export interface UnitOfMeasureType {
@@ -161,6 +164,7 @@ export interface UnitOfMeasureType {
   unitCode: UNCEFACTUnitCodeType;
   symbol: UNCEFACTUnitSymbolType;
   baseFactor?: number;
+  baseOffset?: number;
 }
 
 /**
