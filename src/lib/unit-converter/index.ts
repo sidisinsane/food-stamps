@@ -13,6 +13,7 @@ import {
   EXCLUDED_NON_US,
   EXCLUDED_UNITS_OF_MEASURE,
   EXCLUDED_US,
+  QUANTITY_GOALS,
   UNITS_OF_MEASURE,
 } from "./constants";
 
@@ -27,12 +28,7 @@ function getBestMatchOpts(locale: string = "en", debug?: boolean) {
     console.log(excluded);
   }
 
-  return {
-    exclude: excluded,
-    minValue: 1,
-    maxValue: 999,
-    preferMax: false,
-  };
+  return { exclude: excluded };
 }
 
 function getAvailableUnits(
@@ -81,10 +77,19 @@ function convertToAllAvailableUnits(
 
 function getClosest(
   convertedToAllAvailableUnits: ResultSetType[],
-  goal?: number,
+  locale: string,
+  quantity: string,
   debug?: boolean,
 ) {
-  goal = goal || 250;
+  // When only one unit is available (e.g. temperature per locale),
+  // skip goal lookup and return it directly.
+  if (convertedToAllAvailableUnits.length === 1) {
+    return convertedToAllAvailableUnits[0];
+  }
+
+  const goals = QUANTITY_GOALS[quantity];
+  const goal = goals?.[locale] ?? goals?.["default"] ?? 250;
+
   const valuesArr = convertedToAllAvailableUnits.map((unit) => unit["value"]);
   const closestVal = closest(valuesArr, goal);
 
@@ -121,7 +126,12 @@ function getBestMatch(props: MatchProps) {
     debug,
   );
   // 4. Get closest match
-  const closestValMatch = getClosest(convertedToAllAvailableUnits, 250, debug);
+  const closestValMatch = getClosest(
+    convertedToAllAvailableUnits,
+    locale,
+    convertedToBase["quantity"],
+    debug,
+  );
 
   if (debug) {
     console.log("");
@@ -174,7 +184,6 @@ function formatValue(value: number, locale: string = "en") {
 
 function getMatch(props: MatchProps) {
   const { locale, value, unitCode, debug } = props;
-  // const opts = getBestMatchOpts(locale);
 
   let newValue = value;
   let newSymbol = "";
@@ -189,7 +198,6 @@ function getMatch(props: MatchProps) {
 
   const res: any = {};
   res["value"] = valueStr;
-  //res["valueStr"] = valueStr;
   res["symbol"] = newSymbol;
 
   if (debug) {
