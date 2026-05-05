@@ -153,26 +153,26 @@ export const UNITS_OF_MEASURE: UnitOfMeasureType[] = [
     symbol: "y",
     baseFactor: 3.15576 * Math.pow(10, 7),
   },
-  { 
-    quantity: "thermodynamic temperature", 
-    unitCode: "KEL", 
-    symbol: "°K",  
+  {
+    quantity: "thermodynamic temperature",
+    unitCode: "KEL",
+    symbol: "°K",
     baseFactor: 1,
-    baseOffset: 0 
-  }, 
+    baseOffset: 0,
+  },
   {
     quantity: "thermodynamic temperature",
     unitCode: "CEL",
     symbol: "°C",
     baseFactor: 1,
-    baseOffset: 273.15
+    baseOffset: 273.15,
   },
   {
     quantity: "thermodynamic temperature",
     unitCode: "FAH",
     symbol: "°F",
-    baseFactor: 5/9,   
-    baseOffset: 255.37222222
+    baseFactor: 5 / 9,
+    baseOffset: 255.37222222,
   },
   {
     quantity: "area",
@@ -319,6 +319,22 @@ export const EXCLUDED_UNITS_OF_MEASURE: UNCEFACTUnitCodeType[] = [
 
 /** @type {import('./types.js').UNCEFACTUnitCodeType[]} */
 export const EXCLUDED_US: UNCEFACTUnitCodeType[] = ["CEL", "KGM", "GRM", "MRM"];
+
+/**
+ * Goal values used to select the most human-friendly unit per quantity and locale.
+ * The "closest to goal" heuristic biases toward mid-range values that produce
+ * short, familiar strings suitable for label printing.
+ * Temperature is intentionally absent — only one unit is available per locale
+ * after exclusions, so no selection needs to occur.
+ * Values should be tuned based on observed output quality.
+ */
+export const QUANTITY_GOALS: Record<string, Record<string, number>> = {
+  volume: { en: 250, default: 250 },
+  mass:   { en: 250, default: 250 },
+  length: { en: 250, default: 250 },
+  time:   { en: 250, default: 250 },
+  area:   { en: 250, default: 250 },
+};
 
 /** @type {import('./types.js').UNCEFACTUnitCodeType[]} */
 export const EXCLUDED_NON_US: UNCEFACTUnitCodeType[] = [
